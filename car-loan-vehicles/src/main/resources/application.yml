@@ -1,0 +1,44 @@
+spring:
+  config:
+    location: classpath:application.yml
+  liquibase:
+    enabled: false
+  datasource:
+    initialization-mode: EMBEDDED
+    url: jdbc:h2:mem:db;INIT=CREATE SCHEMA IF NOT EXISTS vehicles
+    username: sa
+    password: ""
+    data: classpath:data-h2.sql
+  h2:
+    console:
+      enabled: true
+  jpa:
+    show-sql: true
+management:
+  server:
+    port: 9090
+  metrics:
+    export:
+      jmx:
+        enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, prometheus
+---
+spring:
+  profiles: cloud
+  liquibase:
+    enabled: true
+  datasource:
+    initialization-mode: NEVER
+  jpa:
+    show-sql: false
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+  h2:
+    console:
+      enabled: false
+  main:
+    lazy-initialization: true
