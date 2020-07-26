@@ -1,0 +1,45 @@
+
+spring:
+  application:
+    name: car-loan-locales
+  config:
+    location: classpath:application.yml
+  cache:
+    type: simple
+  main:
+    allow-bean-definition-overriding: true
+management:
+  server:
+    port: 9090
+  metrics:
+    export:
+      jmx:
+        enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, prometheus
+  health:
+    redis:
+      enabled: false
+---
+spring:
+  profiles: cloud
+  main:
+    lazy-initialization: true
+  cache:
+    type: redis
+    redis:
+      cache-null-values: false
+      key-prefix: ${spring.application.name}
+      time-to-live: 1d
+  redis:
+    timeout: 1s
+    client-name: locales_${random.int}
+    jedis:
+      pool:
+        max-wait: 1s
+  data:
+    redis:
+      repositories:
+        enabled: false
