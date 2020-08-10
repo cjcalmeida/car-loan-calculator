@@ -1,0 +1,83 @@
+{
+  "rabbit_version": "3.8.5",
+  "rabbitmq_version": "3.8.5",
+  "product_name": "RabbitMQ",
+  "product_version": "3.8.5",
+  "users": [
+    {
+      "name": "guest",
+      "password_hash": "EjbcIYyCdDXclEj/ZqSjJJ1d9EOgmMcCg2Pov0DEBzjVYLYB",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": "administrator"
+    }
+  ],
+  "vhosts": [
+    {
+      "name": "/"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "guest",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "parameters": [],
+  "policies": [],
+  "queues": [
+    {
+      "name": "notification-mail",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "loan.notification",
+        "x-dead-letter-routing-key": "error",
+        "x-queue-mode": "lazy",
+        "x-queue-type": "classic"
+      }
+    },
+    {
+      "name": "notification-errors",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-queue-mode": "lazy",
+        "x-queue-type": "classic"
+      }
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "loan.notification",
+      "vhost": "/",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
+  ],
+  "bindings": [
+    {
+      "source": "loan.notification",
+      "vhost": "/",
+      "destination": "notification-errors",
+      "destination_type": "queue",
+      "routing_key": "error",
+      "arguments": {}
+    },
+    {
+      "source": "loan.notification",
+      "vhost": "/",
+      "destination": "notification-mail",
+      "destination_type": "queue",
+      "routing_key": "mail",
+      "arguments": {}
+    }
+  ]
+}
