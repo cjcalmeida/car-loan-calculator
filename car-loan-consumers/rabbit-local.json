@@ -1,0 +1,110 @@
+{
+  "rabbit_version": "3.8.5",
+  "rabbitmq_version": "3.8.5",
+  "product_name": "RabbitMQ",
+  "product_version": "3.8.5",
+  "users": [
+    {
+      "name": "guest",
+      "password_hash": "EjbcIYyCdDXclEj/ZqSjJJ1d9EOgmMcCg2Pov0DEBzjVYLYB",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": "administrator"
+    }
+  ],
+  "vhosts": [
+    {
+      "name": "/"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "guest",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "topic_permissions": [],
+  "parameters": [],
+  "policies": [],
+  "queues": [
+    {
+      "name": "proposal-saved-consumers",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "loan.proposal.errors",
+        "x-dead-letter-routing-key": "saved.consumers",
+        "x-queue-type": "classic"
+      }
+    },
+    {
+      "name": "proposal-saved-notification",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-dead-letter-exchange": "loan.proposal.errors",
+        "x-dead-letter-routing-key": "saved.notification",
+        "x-queue-type": "classic"
+      }
+    },
+    {
+      "name": "proposal-errors",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-queue-type": "classic"
+      }
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "loan.proposal.errors",
+      "vhost": "/",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": true,
+      "arguments": {}
+    },
+    {
+      "name": "loan.proposal.saved",
+      "vhost": "/",
+      "type": "fanout",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
+  ],
+  "bindings": [
+    {
+      "source": "loan.proposal.errors",
+      "vhost": "/",
+      "destination": "proposal-errors",
+      "destination_type": "queue",
+      "routing_key": "saved.#",
+      "arguments": {}
+    },
+    {
+      "source": "loan.proposal.saved",
+      "vhost": "/",
+      "destination": "proposal-saved-consumers",
+      "destination_type": "queue",
+      "routing_key": "",
+      "arguments": {}
+    },
+    {
+      "source": "loan.proposal.saved",
+      "vhost": "/",
+      "destination": "proposal-saved-notification",
+      "destination_type": "queue",
+      "routing_key": "",
+      "arguments": {}
+    }
+  ]
+}
