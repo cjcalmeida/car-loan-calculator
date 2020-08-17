@@ -20,6 +20,14 @@
     </properties>
 
     <dependencies>
+
+        <!-- Shared Kernels Car Loan-->
+        <dependency>
+            <groupId>${groupId}</groupId>
+            <artifactId>car-loan-core-events</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+
         <!-- Web Expose (enabled only for actuator)-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

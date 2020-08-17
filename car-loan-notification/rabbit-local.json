@@ -25,37 +25,56 @@
       "read": ".*"
     }
   ],
+  "topic_permissions": [],
   "parameters": [],
   "policies": [],
   "queues": [
     {
-      "name": "notification-mail",
+      "name": "proposal-saved-consumers",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
       "arguments": {
-        "x-dead-letter-exchange": "loan.notification",
-        "x-dead-letter-routing-key": "error",
-        "x-queue-mode": "lazy",
+        "x-dead-letter-exchange": "loan.proposal.errors",
+        "x-dead-letter-routing-key": "saved.consumers",
         "x-queue-type": "classic"
       }
     },
     {
-      "name": "notification-errors",
+      "name": "proposal-saved-notification",
       "vhost": "/",
       "durable": true,
       "auto_delete": false,
       "arguments": {
-        "x-queue-mode": "lazy",
+        "x-dead-letter-exchange": "loan.proposal.errors",
+        "x-dead-letter-routing-key": "saved.notification",
+        "x-queue-type": "classic"
+      }
+    },
+    {
+      "name": "proposal-errors",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
         "x-queue-type": "classic"
       }
     }
   ],
   "exchanges": [
     {
-      "name": "loan.notification",
+      "name": "loan.proposal.errors",
       "vhost": "/",
-      "type": "direct",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": true,
+      "arguments": {}
+    },
+    {
+      "name": "loan.proposal.saved",
+      "vhost": "/",
+      "type": "fanout",
       "durable": true,
       "auto_delete": false,
       "internal": false,
@@ -64,19 +83,27 @@
   ],
   "bindings": [
     {
-      "source": "loan.notification",
+      "source": "loan.proposal.errors",
       "vhost": "/",
-      "destination": "notification-errors",
+      "destination": "proposal-errors",
       "destination_type": "queue",
-      "routing_key": "error",
+      "routing_key": "saved.#",
       "arguments": {}
     },
     {
-      "source": "loan.notification",
+      "source": "loan.proposal.saved",
       "vhost": "/",
-      "destination": "notification-mail",
+      "destination": "proposal-saved-consumers",
       "destination_type": "queue",
-      "routing_key": "mail",
+      "routing_key": "",
+      "arguments": {}
+    },
+    {
+      "source": "loan.proposal.saved",
+      "vhost": "/",
+      "destination": "proposal-saved-notification",
+      "destination_type": "queue",
+      "routing_key": "",
       "arguments": {}
     }
   ]
