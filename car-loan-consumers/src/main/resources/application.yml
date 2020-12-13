@@ -11,8 +11,8 @@ spring:
     stream:
       bindings:
         input:
-          destination: loan.proposal.saved
-          group: proposal-saved-consumers
+          destination: event.proposal.saved
+          group: create.consumer
           consumer:
             maxAttempts: 2
             concurrency: 3
@@ -29,7 +29,7 @@ spring:
           connection-name-prefix: consumers
   rabbitmq:
     host: localdocker.com
-    virtual-host: /
+    virtual-host: /car-loan
     cache:
       channel:
         size: 5
