@@ -3,7 +3,7 @@ package com.cjcalmeida.carloan.proposal.domain;
 import javax.persistence.*;
 
 @Entity
-@Table(schema = "proposal", name = "location")
+@Table(catalog = "proposal", name = "location")
 public class Location {
 
     @Id

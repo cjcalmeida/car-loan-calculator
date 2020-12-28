@@ -79,7 +79,7 @@ spring:
     enabled: true
   datasource:
     # Set env SPRING_DATASOURCE_PASSWORD, SPRING_DATASOURCE_USERNAME
-    url: jdbc:postgresql://_db._tcp.car-loan-database/notifications
+    url: jdbc:postgresql://localdocker.com:5432/proposal
     initialization-mode: NEVER
   jpa:
     show-sql: false
@@ -88,7 +88,7 @@ spring:
       ddl-auto: none
   rabbitmq:
     # Set env SPRING_RABBITMQ_HOST, SPRING_RABBITMQ_PASSWORD, SPRING_RABBITMQ_USERNAME
-    virtual-host: /
+    virtual-host: /car-loan
     cache:
       channel:
         size: 10
