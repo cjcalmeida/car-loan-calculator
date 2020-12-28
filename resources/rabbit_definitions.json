@@ -1,0 +1,228 @@
+{
+  "rabbit_version": "3.8.5",
+  "rabbitmq_version": "3.8.5",
+  "product_name": "RabbitMQ",
+  "product_version": "3.8.5",
+  "users": [
+    {
+      "name": "loan-proposal",
+      "password_hash": "HPIVdOhmH/MCXy6nX/OjfiLkShw3j0nlMMDFVa2vdR92nmhC",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": ""
+    },
+    {
+      "name": "loan-vehicles",
+      "password_hash": "IVk8s89VsVoDTprAtdneKYpm4sE6b5OnlAuPwcEBGQeZTijf",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": ""
+    },
+    {
+      "name": "loan-consumers",
+      "password_hash": "n+KkrPbmRKTgJlLJAth7tzlD1bCS17/nZ0hD78y1FWzHqqo+",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": ""
+    },
+    {
+      "name": "loan-notifications",
+      "password_hash": "+R/itNGkb6sFjByEsH6Lt1xg7k0SNjH7jEgdOHkilZmSCrcr",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": ""
+    },
+    {
+      "name": "guest",
+      "password_hash": "OkPupJgF/17pQTgP5xmNJ9vzXNJ9vRf3PHbbvMnGLSdFxzga",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": "administrator"
+    }
+  ],
+  "vhosts": [
+    {
+      "name": "/car-loan"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "loan-notifications",
+      "vhost": "/car-loan",
+      "configure": "",
+      "write": ".*.notification.*",
+      "read": ".*.notification.*"
+    },
+    {
+      "user": "loan-proposal",
+      "vhost": "/car-loan",
+      "configure": "",
+      "write": ".*.proposal.*",
+      "read": ".*.proposal.*"
+    },
+    {
+      "user": "loan-consumers",
+      "vhost": "/car-loan",
+      "configure": "",
+      "write": ".*.consumer.*",
+      "read": ".*.consumer.*"
+    },
+    {
+      "user": "loan-vehicles",
+      "vhost": "/car-loan",
+      "configure": "",
+      "write": ".*.vehicle.*",
+      "read": ".*.vehicle.*"
+    }
+  ],
+  "topic_permissions": [
+    {
+      "user": "loan-notifications",
+      "vhost": "/car-loan",
+      "exchange": "",
+      "write": ".*.notification.*",
+      "read": ".*.notification.*"
+    },
+    {
+      "user": "loan-proposal",
+      "vhost": "/car-loan",
+      "exchange": "",
+      "write": ".*.proposal.*",
+      "read": ".*.proposal.*"
+    },
+    {
+      "user": "loan-consumers",
+      "vhost": "/car-loan",
+      "exchange": "",
+      "write": ".*.consumer.*",
+      "read": ".*.consumer.*"
+    },
+    {
+      "user": "loan-vehicles",
+      "vhost": "/car-loan",
+      "exchange": "",
+      "write": ".*.vehicle.*",
+      "read": ".*.vehicle.*"
+    }
+  ],
+  "parameters": [],
+  "policies": [
+    {
+      "vhost": "/car-loan",
+      "name": "lazy-queues",
+      "pattern": ".*",
+      "apply-to": "queues",
+      "definition": {
+        "queue-mode": "lazy"
+      },
+      "priority": 0
+    }
+  ],
+  "queues": [
+    {
+      "name": "create.notification.proposal-received",
+      "vhost": "/car-loan",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-queue-type": "classic",
+        "x-dead-letter-exchange": "error.all",
+        "x-dead-letter-routing-key": "create.notification.proposal-received"
+      }
+    },
+    {
+      "name": "error.all",
+      "vhost": "/car-loan",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-max-length": 10000,
+        "x-queue-type": "classic"
+      }
+    },
+    {
+      "name": "update.proposal.vehicle-market-value",
+      "vhost": "/car-loan",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-queue-type": "classic",
+        "x-dead-letter-exchange": "error.all",
+        "x-dead-letter-routing-key": "update.proposal.vehicle-market-value"
+      }
+    },
+    {
+      "name": "create.consumer",
+      "vhost": "/car-loan",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-queue-type": "classic",
+        "x-dead-letter-exchange": "error.all",
+        "x-dead-letter-routing-key": "create.consumer"
+      }
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "event.proposal.saved",
+      "vhost": "/car-loan",
+      "type": "fanout",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {
+        "alternate-exchange": "error.loan"
+      }
+    },
+    {
+      "name": "event.vehicle.created",
+      "vhost": "/car-loan",
+      "type": "fanout",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {
+        "alternate-exchange": "error.loan"
+      }
+    },
+    {
+      "name": "error.all",
+      "vhost": "/car-loan",
+      "type": "fanout",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
+  ],
+  "bindings": [
+    {
+      "source": "error.all",
+      "vhost": "/car-loan",
+      "destination": "error.all",
+      "destination_type": "queue",
+      "routing_key": "",
+      "arguments": {}
+    },
+    {
+      "source": "event.proposal.saved",
+      "vhost": "/car-loan",
+      "destination": "create.consumer",
+      "destination_type": "queue",
+      "routing_key": "",
+      "arguments": {}
+    },
+    {
+      "source": "event.proposal.saved",
+      "vhost": "/car-loan",
+      "destination": "create.notification.proposal-received",
+      "destination_type": "queue",
+      "routing_key": "",
+      "arguments": {}
+    },
+    {
+      "source": "event.vehicle.created",
+      "vhost": "/car-loan",
+      "destination": "update.proposal.vehicle-market-value",
+      "destination_type": "queue",
+      "routing_key": "",
+      "arguments": {}
+    }
+  ]
+}
