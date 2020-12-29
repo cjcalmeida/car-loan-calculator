@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @Entity
-@Table(name = "template", schema = "notifications")
+@Table(name = "template", catalog = "notification")
 public class Template implements Serializable {
 
     private static final long serialVersionUID = 5389577745420377165L;

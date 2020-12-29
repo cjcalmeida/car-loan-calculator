@@ -43,6 +43,7 @@ public class MailService {
             log.info("Email successfully sent");
 
         }catch (Exception e) {
+            log.error("Error sending email {}", e.getMessage(), e);
             mail.setStatus(Mail.Status.ERROR);
             repository.save(mail);
             Metrics.counter("notification.email", "status", "error", "reason", e.getClass().getSimpleName())

@@ -11,7 +11,7 @@ import java.util.UUID;
 
 
 @Entity
-@Table(name = "mail", schema = "notifications")
+@Table(name = "email", catalog = "notification")
 public class Mail implements Serializable {
 
     private static final long serialVersionUID = 546656614281216431L;
