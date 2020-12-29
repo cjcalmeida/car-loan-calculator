@@ -1,0 +1,74 @@
+version: '2'
+services:
+  postgres:
+    image: postgres:alpine
+    environment:
+      - POSTGRES_PASSWORD=root
+    volumes:
+      - ${PWD}/resources/postgres-init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432"
+  rabbit:
+    image: rabbitmq:management-alpine
+    volumes:
+      - ${PWD}/resources/rabbit_definitions.json:/etc/rabbitmq/definitions.json
+      - ${PWD}/resources/rabbit.config:/etc/rabbitmq/rabbit.config
+    ports:
+      - "5672"
+      - "15672:15672"
+  consumers:
+    depends_on:
+      - postgres
+      - rabbit
+    image: cjcalmeida/car-loan-consumers:latest
+    environment:
+      - SPRING_PROFILES_ACTIVE=cloud
+      - SPRING_RABBITMQ_HOST=rabbit
+      - SPRING_RABBITMQ_USERNAME=loan-consumers
+      - SPRING_RABBITMQ_PASSWORD=12345678
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/consumer
+      - SPRING_LIQUIBASE_USER=user_liquibase_consumer
+      - SPRING_LIQUIBASE_PASSWORD=l1qu1b4s3_c0nsum3r
+      - SPRING_DATASOURCE_PASSWORD=c0nsum3r
+      - SPRING_DATASOURCE_USERNAME=user_consumer
+    ports:
+      - "9090"
+  notifications:
+    depends_on:
+      - postgres
+      - rabbit
+    image: cjcalmeida/car-loan-notifications:latest
+    environment:
+      - SPRING_PROFILES_ACTIVE=cloud
+      - SPRING_RABBITMQ_HOST=rabbit
+      - SPRING_RABBITMQ_USERNAME=loan-notifications
+      - SPRING_RABBITMQ_PASSWORD=12345678
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/notification
+      - SPRING_LIQUIBASE_USER=user_liquibase_notification
+      - SPRING_LIQUIBASE_PASSWORD=l1qu1b4s3_n0t1f1c4t10n
+      - SPRING_DATASOURCE_PASSWORD=n0t1f1c4t10n
+      - SPRING_DATASOURCE_USERNAME=user_notification
+      - SPRING_MAIL_HOST=
+      - SPRING_MAIL_PORT=
+      - SPRING_MAIL_USERNAME=
+      - SPRING_MAIL_PASSWORD=
+    ports:
+      - "9090"
+  proposals:
+    depends_on:
+      - postgres
+      - rabbit
+    image: cjcalmeida/car-loan-proposals:latest
+    environment:
+      - SPRING_RABBITMQ_HOST=rabbit
+      - SPRING_RABBITMQ_USERNAME=loan-proposal
+      - SPRING_RABBITMQ_PASSWORD=12345678
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/proposal
+      - SPRING_LIQUIBASE_USER=user_liquibase_proposal
+      - SPRING_LIQUIBASE_PASSWORD=l1qu1b4s3_pr0p0s4l
+      - SPRING_DATASOURCE_PASSWORD=pr0p0s4l
+      - SPRING_DATASOURCE_USERNAME=user_proposal
+      - SPRING_PROFILES_ACTIVE=cloud
+    ports:
+      - "8080:8080"
+      - "9090"

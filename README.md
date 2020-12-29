@@ -1,4 +1,4 @@
-# Car Loan 
+# Car Loan
 
 Car Loan é um projeto exemplo (em breve terá um tutorial \o/ ), que implementa uma arquitetura de microserviços, utilizando Spring Boot, Spring Cloud, Kubernetes e Istio Service Mesh.
 
@@ -19,26 +19,23 @@ Serviço de proposta de financiamento, responsavel por listar os paremetros de t
 | Tipo      | Recurso  | Nome                                  | Binding | Utilização                                                                              |
 |-----------|----------|---------------------------------------|---------|-----------------------------------------------------------------------------------------|
 | Listener  | Queue    | update.proposal.vehicle-market-value  | N/A     | Replica no serviço os dados de valores de mercado dos veiculos cadastrados no sistema   |
-|-----------|----------|---------------------------------------|---------|-----------------------------------------------------------------------------------------|
 | Producer  | Exchange | event.proposal.saved                  | N/A     | Notifica a criação de uma proposta de financiamento                                     |
-|-----------|----------|---------------------------------------|---------|-----------------------------------------------------------------------------------------|
+
 
 #### APIs
 
 
 | ID | Method | Path              | Description                                          |
 |----|--------|-------------------|------------------------------------------------------|
-| 01 | POST   | /v1/proposal      | Cadastra a proposta de financiamento			     |
-|----|--------|-------------------|------------------------------------------------------|
+| 01 | POST   | /v1/proposal      | Cadastra a proposta de financiamento			           |
 | 02 | POST   | /v1/proposal/loan | Recupera os parametros para calculo de financiamento |
-|----|--------|-------------------|------------------------------------------------------|
 
 
 Payload Exemplo = COLOCAR O PAYLOAD NO POSTMAN DE EXEMPLO
 
 ##### 01 - POST /v1/proposal
 
-´´´´
+````json
 {
   "vehicleVersionId": "7265276f-3dab-4840-bbcf-ba385db6676d",
   "loan": {
@@ -58,12 +55,12 @@ Payload Exemplo = COLOCAR O PAYLOAD NO POSTMAN DE EXEMPLO
     "state": "SP"
   }
 }
-´´´´
+````
 
 
 ##### 01 - POST /v1/proposal/loan
 
-´´´´
+````json
 {
   "vehicleVersionId": "7265276f-3dab-4840-bbcf-ba385db6676d",
   "proponentIdentity": "12345678909",
@@ -72,7 +69,7 @@ Payload Exemplo = COLOCAR O PAYLOAD NO POSTMAN DE EXEMPLO
     "state": "SP"
   }
 }
-´´´´
+````
 
 ### Notification Service
 
@@ -83,7 +80,6 @@ Serviço para envio de notificações, utilizado para envio de e-mails ao client
 | Tipo      | Recurso  | Nome                                  | Binding | Utilização                                                        |
 |-----------|----------|---------------------------------------|---------|-------------------------------------------------------------------|
 | Listener  | Queue    | create.notification.proposal-received | N/A     | Comando para envio de e-mail informando a recepção da proposta.   |
-|-----------|----------|---------------------------------------|---------|-------------------------------------------------------------------|
 
 
 #### APIs
@@ -99,7 +95,6 @@ Serviço para gestão de clientes, possui todas as informações necesárias de 
 | Tipo      | Recurso  | Nome                                  | Binding | Utilização                                                           |
 |-----------|----------|---------------------------------------|---------|----------------------------------------------------------------------|
 | Listener  | Queue    | create.consumer                       | N/A     | Comando para cadastro de clientes depois da criação de um proposta.  |
-|-----------|----------|---------------------------------------|---------|----------------------------------------------------------------------|
 
 
 #### APIs
@@ -128,7 +123,6 @@ Serviço para gestão dos dados de veiculos disponiveis para compra.
 | Tipo      | Recurso  | Nome                                  | Binding | Utilização                                           |
 |-----------|----------|---------------------------------------|---------|------------------------------------------------------|
 | Producer  | Exchange | event.vehicle.created                 | N/A     | Notifica o cadastro de um veiculo no sistema         |
-|-----------|----------|---------------------------------------|---------|------------------------------------------------------|
 
 #### APIs
 
@@ -143,8 +137,10 @@ Para nossa infraestrutura defini alguns pré-requisitos, uma vez definidos anali
 Os requisitos listados abaixo representam a execução de todo o sistema incluindo plataforma de execução, mesh e serviços.
 
 **OS**: Windows, Linux ou Mac
+
 **Memory**: 8Gb
-**CPU**: 2cores 
+
+**CPU**: 2cores
 
 ### Ferramentas e Serviços
 
@@ -167,13 +163,9 @@ Hoje temos as seguintes definições de filas e exchanges:
 | Exchange              | Tipo   | Queue                                 | Binding | Utilização                                                                                     |
 |-----------------------|--------|---------------------------------------|---------|------------------------------------------------------------------------------------------------|
 | event.vehicle.created | Fanout | update.proposal.vehicle-market-value  | N/A     | Para o evento de criação de veiculo, replica os valores de mercado deste veiculo               |
-|-----------------------|--------|---------------------------------------|---------|------------------------------------------------------------------------------------------------|
 | event.proposal.saved  | Fanout | create.consumer                       | N/A     | Para o evento de cadastro de proposta cadastra o novo usuario no sistema.                      |
-|-----------------------|--------|---------------------------------------|---------|------------------------------------------------------------------------------------------------|
 | event.proposal.saved  | Fanout | create.notification.proposal-received | N/A     | Para o evento de cadastro de proposta envia uma notificação (via e-mail) de proposta recebida. |
-|-----------------------|--------|---------------------------------------|---------|------------------------------------------------------------------------------------------------|
 | error.all             | Fanout | error.all                             | N/A     | DLX e DLQ genéricas                                                                            |
-|-----------------------|--------|---------------------------------------|---------|------------------------------------------------------------------------------------------------|
 
 #### PostgreSQL
 
@@ -187,58 +179,95 @@ Para executar todo o sistema, siga os passos abaixos de acordo com o local e a f
 
 Iniciar o RabbitMQ:
 
-´´´´
+````shell
 docker run -d -m 300mb -p 5672:5672 -p 15672:15672 --name rabbitmq rabbitmq:management-alpine
-´´´´
+````
 
 Importe o arquivo rabbitmq-definitions.json:
 
-´´´´
+````
 	1. Acesse o console do RabbitMQ em http://localhost:5672
 	2. Faça login com as credenciais: guest/guest
 	3. Na pagina Overview, procure a opção Import Definitions.
-	4. Selecione o arquivo (pasta resources/rabbitmq do repositório) e clique em Upload broker Definitions
-´´´´
+	4. Selecione o arquivo (pasta resources do repositório) e clique em Upload broker Definitions
+````
 
 
 #### PostgreSQL
 
 Iniciar o PostgreSQL
 
-´´´´
-docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=root -m 150mb --name postgresql postgres:10-alpine
-´´´´
+````shell
+docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=root -m 150mb --name postgresql postgres:alpine
+````
 
 Execute os comandos em resources/postgres-init.sql:
 
-´´´´
+````
 	1. No terminal digite: docker exec -ti postgresql bash
-	2. Faça login no postgresql com: psql -U postgres -W (quando solicitada a senha digite root).
+	2. Faça login no postgresql com: psql -U postgres
 	3. Copie todos os comandos do arquivo postgres-init.sql e cole no terminal.
-´´´´
+  4. Para sair digite \q e tecle enter, em seguida digite exit e tecle enter novamente.
+````
 
 
 #### Services
 
-**Obs.:** A ordem da inicialização não é importante, uma vez que os serviços são 100% autonomos e resilientes.
+**Obs.:** A ordem da inicialização não é importante, uma vez que os serviços são 100% autonomos.
 
-Notification
+**Notification**
 
-´´´´
-docker run -d --name notifications -m 180mb -p 9095:9090 --link rabbitmq:rabbitmq -e SPRING_RABBITMQ_HOST=rabbitmq cjcalmeida/car-loan-notifications
-´´´´
+````shell
+docker run -d --name notifications -m 180mb -p 9095:9090 \
+--link rabbitmq:rabbitmq --link postgresql:postgresql \
+-e SPRING_RABBITMQ_HOST=rabbitmq \
+-e SPRING_RABBITMQ_USERNAME=loan-notifications \
+-e SPRING_RABBITMQ_PASSWORD=12345678 \
+-e SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql:5432/notification \
+-e SPRING_LIQUIBASE_USER=user_liquibase_notification \
+-e SPRING_LIQUIBASE_PASSWORD=l1qu1b4s3_n0t1f1c4t10n \
+-e SPRING_DATASOURCE_PASSWORD=n0t1f1c4t10n \
+-e SPRING_DATASOURCE_USERNAME=user_notification \
+-e SPRING_MAIL_HOST= \
+-e SPRING_MAIL_PORT= \
+-e SPRING_MAIL_USERNAME= \
+-e SPRING_MAIL_PASSWORD= \
+-e SPRING_PROFILES_ACTIVE=cloud \
+cjcalmeida/car-loan-notifications
+````
 
-Consumers
+**Consumers**
 
-´´´´
-docker run -d --name consumers -m 180mb -p 9100:9090 --link rabbitmq:rabbitmq -e SPRING_RABBITMQ_HOST=rabbitmq cjcalmeida/car-loan-consumers
-´´´´
+````shell
+docker run -d --name consumers -m 180mb -p 9100:9090 --link rabbitmq:rabbitmq --link postgresql:postgresql \
+-e SPRING_PROFILES_ACTIVE=cloud \
+-e SPRING_RABBITMQ_HOST=rabbitmq \
+-e SPRING_RABBITMQ_USERNAME=loan-consumers \
+-e SPRING_RABBITMQ_PASSWORD=12345678 \
+-e SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql:5432/consumer \
+-e SPRING_DATASOURCE_PASSWORD=c0nsum3r \
+-e SPRING_DATASOURCE_USERNAME=user_consumer \
+-e SPRING_LIQUIBASE_USER=user_liquibase_consumer \
+-e SPRING_LIQUIBASE_PASSWORD=l1qu1b4s3_c0nsum3r \
+cjcalmeida/car-loan-consumers
+````
 
-Proposal
+**Proposal**
 
-´´´´
-docker run -d --name proposals -m 180mb -p 8085:8080 -p 9105:9090 --link rabbitmq:rabbitmq -e SPRING_RABBITMQ_HOST=rabbitmq -e SPRING_LIQUIBASE_USER= -e SPRING_LIQUIBASE_PASSWORD= -e SPRING_DATASOURCE_PASSWORD= -e SPRING_DATASOURCE_USERNAME= -e SPRING_PROFILES_ACTIVE=cloud cjcalmeida/car-loan-proposals
-´´´´
+````shell
+docker run -d --name proposals -m 180mb -p 8085:8080 -p 9105:9090 \
+--link rabbitmq:rabbitmq --link postgresql:postgresql \
+-e SPRING_RABBITMQ_HOST=rabbitmq \
+-e SPRING_RABBITMQ_USERNAME=loan-proposal \
+-e SPRING_RABBITMQ_PASSWORD=12345678 \
+-e SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql:5432/proposal \
+-e SPRING_LIQUIBASE_USER=user_liquibase_proposal \
+-e SPRING_LIQUIBASE_PASSWORD=l1qu1b4s3_pr0p0s4l \
+-e SPRING_DATASOURCE_PASSWORD=pr0p0s4l \
+-e SPRING_DATASOURCE_USERNAME=user_proposal \
+-e SPRING_PROFILES_ACTIVE=cloud \
+cjcalmeida/car-loan-proposals
+````
 
 
 ### Docker Compose (local sem istio)
@@ -265,13 +294,9 @@ Formato: **acao.dominio.sub-dominio**
 Campo       | Valores                    | Obrigatório |
 ------------|----------------------------|-------------|
 tipo        | event / command / error    | Sim         |
-------------|----------------------------|-------------|
 dominio     | Dominio emissor do evento  | Sim         |
-------------|----------------------------|-------------|
 sub-dominio | Sub dominio afetado        | Não         |
-------------|----------------------------|-------------|
 ação        | Ver tabela de ações abaixo | Não         |
-------------|----------------------------|-------------|
 
 
 
@@ -280,8 +305,5 @@ Tabela de ações
 Ação    | Descrição                                      | Exemplo                            |
 --------|------------------------------------------------|------------------------------------|
 event   | Ação ocorrida  (verbo no passado)              | criado, excluido, atualizado       |
---------|------------------------------------------------|------------------------------------|
-command | Operação a ser executada (verbo no infinitivo) | cadastrar, excluir, listar, buscar | 
---------|------------------------------------------------|------------------------------------|
+command | Operação a ser executada (verbo no infinitivo) | cadastrar, excluir, listar, buscar |
 error   | Erro que deve ser tratado                      | not-found, already-exists          |
---------|------------------------------------------------|------------------------------------|
