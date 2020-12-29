@@ -47,7 +47,9 @@ public class SimulationService {
         newSimulation.setCreatedAt(new Date());
 
         Optional<Proponent> oProponent =  proponentService.getProponent(newSimulation.getProponent().getIdentity());
-        newSimulation.setProponent(oProponent.orElse(newSimulation.getProponent()));
+        Proponent dbProponent = oProponent.orElse(newSimulation.getProponent());
+        dbProponent.setEmail(newSimulation.getProponent().getEmail());
+        newSimulation.setProponent(dbProponent);
 
         Optional<Location> oLocation = locationService.findLocation(
                 newSimulation.getLocation().getCity(),

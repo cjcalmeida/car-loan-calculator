@@ -32,7 +32,7 @@ spring:
             autoBindDlq: false
             republishToDlq: false
         binder:
-          connection-name-prefix: loan-proposal
+          connection-name-prefix: proposals
   rabbitmq:
     host: localdocker.com
     virtual-host: /car-loan
@@ -40,8 +40,6 @@ spring:
       channel:
         size: 10
         checkout-timeout: 5s
-    username: loan-proposal
-    password: 12345678
   liquibase:
     enabled: false
   datasource:
@@ -71,15 +69,14 @@ management:
 spring:
   profiles: cloud
   main:
-    lazy-initialization: true
+    allow-bean-definition-overriding: true
   h2:
     console:
       enabled: false
   liquibase:
     enabled: true
   datasource:
-    # Set env SPRING_DATASOURCE_PASSWORD, SPRING_DATASOURCE_USERNAME
-    url: jdbc:postgresql://localdocker.com:5432/proposal
+    # Set env SPRING_DATASOURCE_PASSWORD, SPRING_DATASOURCE_USERNAME, SPRING_DATASOURCE_URL
     initialization-mode: NEVER
   jpa:
     show-sql: false
