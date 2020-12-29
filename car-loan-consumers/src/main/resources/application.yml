@@ -17,6 +17,10 @@ spring:
             maxAttempts: 2
             concurrency: 3
       rabbit:
+        bindings:
+          input:
+            consumer:
+              prefetch: 5
         default:
           consumer:
             bindQueue: false
@@ -63,8 +67,6 @@ management:
 ---
 spring:
   profiles: cloud
-  main:
-    lazy-initialization: true
   h2:
     console:
       enabled: false
@@ -79,9 +81,16 @@ spring:
     generate-ddl: false
     hibernate:
       ddl-auto: none
+  cloud:
+    stream:
+      bindings:
+        input:
+          consumer:
+            maxAttempts: 2
+            concurrency: 5
   rabbitmq:
     # Set env SPRING_RABBITMQ_HOST, SPRING_RABBITMQ_PASSWORD, SPRING_RABBITMQ_USERNAME
-    virtual-host: /
+    virtual-host: /car-loan
     cache:
       channel:
         size: 10

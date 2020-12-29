@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Table(name = "proponent", schema = "consumers")
+@Table(name = "proponent", catalog = "consumers")
 public class Proponent implements Serializable {
 
     private static final long serialVersionUID = 2131355721012962634L;
@@ -20,7 +20,7 @@ public class Proponent implements Serializable {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, updatable = false)
     private String email;
 
     @Embedded
